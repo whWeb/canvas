@@ -1,0 +1,77 @@
+<!DOCTYPE html >
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="shortcut icon" href="image/title.ico">
+	<title>bubble</title>
+	<style type="text/css">
+	*{
+	margin:0px;
+	padding:0px;}
+	body{
+	overflow:hidden;
+	background-color:#000;}
+	</style>
+</head>
+	<body>
+	<canvas id ="bubble">您的浏览器不支持html5!</canvas>
+<script>
+	function bubbleCanvas(){
+		this.width = window.innerWidth;
+		this.height = window.innerHeight;
+		this.bubbles = [];
+		this.initBubbles();
+		canvasBubble = this;
+		drawBubbles();
+	}
+	bubbleCanvas.prototype.initBubbles = function(){
+		canvas.width = this.width;
+		canvas.height = this.height;
+		var num = parseInt(this.width)*0.5;
+		for(var i = 0; i < num;i++){
+			var bubbleAttr = {};
+			bubbleAttr.x = this.width*Math.random(); //position
+			bubbleAttr.y = this.height*Math.random() + this.height;			
+			bubbleAttr.r = 10 * Math.random()+10;	// radius
+			bubbleAttr.a = Math.ceil(Math.random()*255); //color
+			bubbleAttr.b = Math.ceil(Math.random()*255);
+			bubbleAttr.c = Math.ceil(Math.random()*255);	
+			bubbleAttr.o = 0.3+Math.random()*0.5;   //opacity
+			bubbleAttr.v =1+4* Math.random();		
+			this.bubbles.push(bubbleAttr);
+		}
+	}
+
+	drawBubbles = function(){
+		var bubble = canvasBubble.bubbles;
+		ctx.clearRect(0,0,canvasBubble.width,canvasBubble.height);
+		for(var i in bubble){
+			if(bubble[i].y > 0)
+				bubble[i].y -= bubble[i].v;
+			else
+				bubble[i].y = canvasBubble.height*Math.random() + canvasBubble.height;	
+			ctx.beginPath();
+			ctx.arc(bubble[i].x, bubble[i].y, bubble[i].r, 0,2*Math.PI);
+			ctx.fillStyle = "rgba("+bubble[i].a+","+bubble[i].b+","+bubble[i].c+","+ bubble[i].o +")";
+			ctx.fill();
+			ctx.closePath();
+		}
+		cancelAnimationFrame(idTimer);
+		idTimer = requestAnimationFrame(drawBubbles);
+	}
+	
+	function resize(){
+ 		 canvasBubble.width = window.innerWidth;
+		 canvasBubble.height = window.innerHeight;
+		 new bubbleCanvas();
+	}
+	window.addEventListener("resize", resize);
+	
+	var canvas = document.getElementById("bubble");
+	var ctx = canvas.getContext("2d");
+	var canvasBubble;
+	var idTimer = 0;
+	new bubbleCanvas();
+</script>
+</body>
+</html>

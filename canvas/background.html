@@ -1,0 +1,106 @@
+<!DOCTYPE html >
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="shortcut icon" href="image/title.ico">
+	<title>知乎背景</title>
+</head>
+<body>
+	<canvas id = "canvas"></canvas>
+	<script type="text/javascript">
+		function roundBall(options){
+			canvas = document.getElementById('canvas');
+			ctx = canvas.getContext("2d");
+			this.ballArr = [];
+			this.width = options.width;
+			this.height = options.height;
+			this.ballNum = options.num;
+			canvas.width = this.width-100;
+			canvas.height = this.height -100;
+			this.init();
+			var that = this;
+			setInterval(function(){
+				for(var i = 0; i < that.ballNum;i++){
+					that.ballArr[i].x += that.ballArr[i].moveX;
+					that.ballArr[i].y += that.ballArr[i].moveY;
+					if(that.ballArr[i].x > that.width)	
+						that.ballArr[i].x = 0;
+					else if(that.ballArr[i].x < 0)
+						that.ballArr[i].x = that.width;
+					if(that.ballArr[i].y > that.height)	
+						that.ballArr[i].y = 0;
+					else if(that.ballArr[i].y < 0)
+						that.ballArr[i].y = that.height;			
+				}
+				that.draw();	
+			},10);	
+		}
+		roundBall.prototype.init = function(){
+			for(var i = 0; i < this.ballNum;i++)
+				this.ballArr.push(this.drawCircle(ctx, num(this.width), num(this.height), num(10, 2), num(10, -10)/40, num(10, -10)/40));
+			
+			this.draw();	
+		}
+		
+		roundBall.prototype.drawCircle = function(ctx, x, y, r, moveX, moveY){
+			var cir = new cirle( x, y, r, moveX, moveY);
+			ctx.fillStyle = 'rgba(0,0,0,0.1)';
+			ctx.beginPath();
+			ctx.arc(cir.x, cir.y, cir.r, 0, 2*Math.PI);
+			ctx.closePath();
+			ctx.fill();
+			return cir;
+		}
+		roundBall.prototype.drawLine = function(ctx, bx, by, ex, ey, opcity){
+			var lin = new line();
+			ctx.strokeStyle = 'rgba(0,0,0,' + opcity + ')';
+			ctx.strokeWidth = 1;
+			ctx.beginPath();
+			ctx.moveTo(bx, by);
+			ctx.lineTo(ex, ey);
+			ctx.stroke();
+			ctx.closePath();	
+		}
+		roundBall.prototype.draw = function(){
+			ctx.clearRect(0, 0,this.width, this.height);
+			for(var i = 0; i < this.ballNum;i++)
+				this.drawCircle(ctx, this.ballArr[i].x, this.ballArr[i].y, this.ballArr[i].r);
+			for(var i = 0; i < this.ballNum; i++){
+				for(var j = 0; j < this.ballNum; j++){
+					if(i + j < this.ballNum){
+						var disX = Math.abs(this.ballArr[i].x - this.ballArr[j].x);
+						var disY = Math.abs(this.ballArr[i].y - this.ballArr[j].y);
+						var lineLen = Math.sqrt(disX*disX + disY*disY);
+						var factor = 1/lineLen*10;
+						var opcity = factor > 0.03 ? 0.03 : factor;				
+						this.drawLine(ctx, this.ballArr[i].x, this.ballArr[i].y, this.ballArr[i+j].x, this.ballArr[i+j].y, opcity);
+					}
+				}
+			}
+			
+		}
+		function num(max, min){
+			var min = arguments[1] || 0;
+			return Math.floor(Math.random()*(max-min+1) + min);
+		}
+		function cirle(x, y, r, moveX, moveY){
+			this.x = x;
+			this.y = y;
+			this.r = r;
+			this.moveX = moveX;
+			this.moveY = moveY;
+		}
+		function line(bx, by, ex, ey){
+			this.bx = bx;
+			this.by = by;
+			this.ex = ex;
+			this.ey = ey;
+		}
+		new roundBall({
+			width: window.innerWidth,
+			height: window.innerHeight,
+			num: 30
+		});
+	</script>
+</body>
+</html>

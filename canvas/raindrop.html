@@ -1,0 +1,103 @@
+<!DOCTYPE html >
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="shortcut icon" href="image/title.ico">
+	<title>雨滴激起涟漪</title>
+	<style type="text/css">
+	*{
+	padding:0px;
+	margin:0px;}
+	</style>
+</head>
+
+<body>
+	<canvas id="canvas"></canvas>
+<script>
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext('2d');
+	var clientWidth = window.innerWidth;
+	var clientHeight = window.innerHeight;
+	canvas.width = clientWidth;
+	canvas.height = clientHeight;
+	var clearColor = "rgba(0,0,0,0.1)";    
+	var dropNum = Random(40, 20);
+	var drops = [];
+	function rainDrop(){
+		this.init();
+	}
+	rainDrop.prototype.init = function(){
+		this.color = "rgba(151,255,255,0.5)";
+		this.x = Random(clientWidth, 0); //雨滴位置
+		this.y = 0;
+		this.w = 2;       //涟漪曲线 高度
+		this.h = 1;
+		this.vw = 3;       //曲线伸张速度
+		this.vh = 1;
+		this.va = 0.96; //涟漪透明度变化，当曲线宽度大于100px,涟漪透明度由1->0  即 a*=va
+		this.opcity = 1;
+		this.vy = Random(5, 4);             //雨滴下落水平速度
+		this.vx = Random(1, -1);
+		this.hitFloor = Random(clientHeight*0.9, clientHeight*0.8);
+		this.size = 2; 
+	}
+	rainDrop.prototype.drawDrop = function(){
+		if(this.y < this.hitFloor){		
+			ctx.fillStyle = this.color;
+			ctx.fillRect(this.x, this.y, this.size, this.size*5);	
+			this.y += this.vy;
+		}else{
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y - this.h/2); //右曲线
+			ctx.bezierCurveTo(this.x + this.w/2, this.y - this.h/2,
+			this.x + this.w/2, this.y + this.h/2,
+			this.x, this.y + this.h/2);
+			
+			ctx.bezierCurveTo(this.x - this.w/2, this.y + this.h/2,
+			this.x - this.w/2, this.y - this.h/2,
+			this.x, this.y - this.h/2);
+			ctx.strokeStyle = "rgba(151,255,255,"+ this.opcity +")";
+			ctx.stroke();
+			ctx.closePath();
+			if(this.opcity > 0.03){
+			this.w += this.vw;
+			this.h += this.vh;	
+				if(this.w > 100){
+					this.vw *= 0.98;
+					this.vh *= 0.98;
+					this.opcity *= this.va;
+				}
+			}else{
+				this.init();
+			}
+		}
+	}
+	function animation(){
+		ctx.fillStyle = clearColor;            //关键，阴影迭加，形成雨滴效果，不能清除 opcity=0.1 从上到下越来越清晰
+		ctx.fillRect(0,0,clientWidth,clientHeight);
+		for(var i in drops)
+			drops[i].drawDrop();
+		requestAnimationFrame(animation,200);
+	}
+	function Random(max, min){
+		min = min || 0;
+		return Math.random()*(max - min) + min;
+	}
+	function resize(){ 
+		clientWidth = window.innerWidth;
+		clientHeight = window.innerHeight;	
+	}
+	+function() {
+		for(var i = 0; i < dropNum;i++){
+			(function(i){
+				setTimeout(function(){
+					drops.push(new rainDrop())},i*200);
+			}(i))
+		}
+	}();
+ 
+	window.addEventListener("resize", resize);
+	animation();	
+</script>
+</body>
+</html>

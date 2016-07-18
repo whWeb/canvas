@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>clock</title>
+</head>
+<body>
+<canvas id = "clock" width="1000" height="1000"></canvas>
+<script>
+	var clock = {
+		init: function(canvas){
+			ctx = canvas.getContext('2d');
+			this.draw();
+		},
+		draw: function(){
+			this.drawFrame();
+			setInterval(this.drawFrame.bind(this),1000);
+		},
+		drawFrame: function(){
+			this.clear();
+			this.drawDial();
+			this.drawIndex();
+			this.getHandles();
+		},
+		clear: function(){
+			ctx.clearRect(0,0,1000,1000);
+		},
+		drawDial: function(){
+			ctx.beginPath();
+			ctx.lineWidth = "10";
+			ctx.strokeStyle = "#000";
+			ctx.arc(300,300,200,0,360,false);
+			ctx.stroke();
+			ctx.closePath();		
+		},
+		drawIndex: function(){
+			for(var i = 0; i < 12; i++){
+				ctx.save();
+				ctx.translate(300,300);
+				ctx.lineWidth = "7";
+				ctx.strokeStyle = "#000";
+				ctx.rotate(i*30*Math.PI/180);
+				ctx.beginPath();
+				ctx.moveTo(0,-170);
+				ctx.lineTo(0,-190);
+				ctx.stroke();
+				ctx.closePath();	
+				ctx.restore();		
+			}	
+			for(var i = 0; i < 60; i++){
+				ctx.save();
+				ctx.translate(300,300);
+				ctx.lineWidth = "3";
+				ctx.strokeStyle = "#000";
+				ctx.rotate(i*6*Math.PI/180);
+				ctx.beginPath();
+				ctx.moveTo(0,-180);
+				ctx.lineTo(0,-190);
+				ctx.stroke();
+				ctx.closePath();	
+				ctx.restore();		
+			}	
+		},
+		getTime: function(){
+			var now = new Date();
+			var sec = now.getSeconds();
+			var mins = now.getMinutes();
+			var hours = now.getHours();
+			return {
+				h: hours,
+				m: mins,
+				s: sec
+			}
+		},
+		getHandles : function(){
+			//时针
+			var time = this.getTime();
+			var hours = time.h > 12 ? time.h - 12 : time.h;
+				ctx.save();
+				ctx.translate(300,300);
+				ctx.lineWidth = "3";
+				ctx.strokeStyle = "#000";
+				ctx.rotate(hours*30*Math.PI/180);
+				ctx.beginPath();
+				ctx.moveTo(0,15);
+				ctx.lineTo(0,-120);
+				ctx.stroke();
+				ctx.closePath();	
+				ctx.restore();	
+			//分针
+			var time = this.getTime();
+			var mins = time.m;
+				ctx.save();
+				ctx.translate(300,300);
+				ctx.lineWidth = "5";
+				ctx.strokeStyle = "#000";
+				ctx.rotate(mins*6*Math.PI/180);
+				ctx.beginPath();
+				ctx.moveTo(0,20);
+				ctx.lineTo(0,-160);
+				ctx.stroke();
+				ctx.closePath();	
+				ctx.restore();	
+			//秒针
+			var time = this.getTime();
+			var mins = time.s;
+				ctx.save();
+				ctx.translate(300,300);
+				ctx.lineWidth = "5";
+				ctx.strokeStyle = "#f00";
+				ctx.rotate(mins*6*Math.PI/180);
+				ctx.beginPath();
+				ctx.moveTo(0,25);
+				ctx.lineTo(0,-165);
+				ctx.stroke();
+				ctx.closePath();
+				
+				ctx.strokeStyle = "#f00";
+				ctx.fillStyle = "#fff";
+				ctx.beginPath();	
+				ctx.arc(0,0,6,0,360,false);			
+				ctx.fill();
+				ctx.stroke();
+				ctx.closePath();
+				
+				ctx.fillStyle = "#f00";			
+				ctx.beginPath();	
+				ctx.arc(0,-140,3,0,360,false);
+				ctx.stroke();
+				ctx.fill();
+				ctx.closePath();			
+				ctx.restore();					
+		}
+	}
+	var canvas = document.getElementById("clock");
+	clock.init(canvas);
+</script>
+</body>
+</html>
