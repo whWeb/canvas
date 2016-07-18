@@ -19,6 +19,7 @@
 		drawFrame: function(){
 			this.clear();
 			this.drawDial();
+			this.drawNumber();
 			this.drawIndex();
 			this.getHandles();
 		},
@@ -32,6 +33,19 @@
 			ctx.arc(300,300,200,0,360,false);
 			ctx.stroke();
 			ctx.closePath();		
+		},
+		drawNumber: function(){
+			ctx.save();
+			ctx.translate(300,300);
+			ctx.font="19px Arial";
+			ctx.textAlign="center";
+			ctx.textBaseline='middle';
+			for(var i=1;i<=12;i++){
+				if(i%3==0){
+					ctx.fillText(i, Math.sin(Math.PI*i/6)*150,-Math.cos(Math.PI*i/6)*150);
+				}
+			}
+			ctx.restore();
 		},
 		drawIndex: function(){
 			for(var i = 0; i < 12; i++){
@@ -75,7 +89,8 @@
 		getHandles : function(){
 			//时针
 			var time = this.getTime();
-			var hours = time.h > 12 ? time.h - 12 : time.h;
+			var hours = time.h + time.m/60;
+				hours = hours > 12 ? hours - 12 : hours;
 				ctx.save();
 				ctx.translate(300,300);
 				ctx.lineWidth = "3";
@@ -97,7 +112,7 @@
 				ctx.rotate(mins*6*Math.PI/180);
 				ctx.beginPath();
 				ctx.moveTo(0,20);
-				ctx.lineTo(0,-160);
+				ctx.lineTo(0,-135);
 				ctx.stroke();
 				ctx.closePath();	
 				ctx.restore();	
@@ -111,7 +126,7 @@
 				ctx.rotate(mins*6*Math.PI/180);
 				ctx.beginPath();
 				ctx.moveTo(0,25);
-				ctx.lineTo(0,-165);
+				ctx.lineTo(0,-145);
 				ctx.stroke();
 				ctx.closePath();
 				
@@ -125,7 +140,7 @@
 				
 				ctx.fillStyle = "#f00";			
 				ctx.beginPath();	
-				ctx.arc(0,-140,3,0,360,false);
+				ctx.arc(0,-120,3,0,360,false);
 				ctx.stroke();
 				ctx.fill();
 				ctx.closePath();			
